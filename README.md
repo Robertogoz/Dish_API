@@ -10,7 +10,7 @@ A RESTful API for restaurant dishes with login system using JWT
 
 * Run `Create database rest;` in MySQL terminal
 
-* Go to `database/database` in this directory and change `my_password` for you MySQL server password 
+* Go to `database/database` in this directory and change `your_password` for you MySQL server password 
 
 * Run on terminal `npm install`
 
