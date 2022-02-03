@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consumo da API</title>
+</head>
+<body>
+	<h3>Login</h3>
+	<input type="text" name='email' id='email' placeholder="abc@email.com">
+	<input type="password" name="password" id="password" placeholder="*******">
+	<button onclick="login()">Login</button>
+
+	<hr>
+	<h4>Menu</h4>
+	<ul id='dishes'></ul>
+    <hr>
+    <h4>New dish</h4>
+        <input type='text' name='name' id='name' placeholder='Dish Name'><br>
+        <input type='text' name='ingredients' id='ingredients' placeholder='Dish Ingredients'><br>
+        <input type='number' name='price' id='price' placeholder='Dish Price'><br>
+        <button type='button' onclick='newDish()'>Save</button>
+	<hr>
+	<h4>Edit dish</h4>
+		<input type="text" name="editedId" id="editedId" placeholder='ID' readonly><br>
+		<input type='text' name='editedName' id='editedName' placeholder='Dish Name'><br>
+		<input type='text' name='editedIngredients' id='editedIngredients' placeholder='Dish Ingredients'><br>
+		<input type='number' name='editedPrice' id='editedPrice' placeholder='Dish Price'><br>
+		<button type='button' onclick='editDish()'>Edit</button>
+
+</body>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+	var axiosConfig = {
+		headers: {
+			authorization: "Bearer " + localStorage.getItem("token")
+		}
+	}	
+
+	function login() {
+		let inputEmail = document.getElementById('email');
+		let inputPassword = document.getElementById('password');
+
+		let user = {
+			email: inputEmail.value,
+			password: inputPassword.value
+		}
+
+		axios.post('http://localhost:3333/auth', user).then(res => {
+			if(res.status == 200) {
+				let token = res.data.token;
+				localStorage.setItem("token", token);
+				axiosConfig.headers.Authorization = "Bearer " + localStorage.getItem("token");
+				location.reload();
+			}
+		}).catch(err => {
+			alert('Err: Unauthorized login');
+		})
+	}
+
+	function newDish() {
+		let inputName = document.getElementById('name');
+		let inputIngredients = document.getElementById('ingredients');
+		let inputPrice = document.getElementById('price');
+
+		let dish = {
+			name: inputName.value,
+			ingredients: inputIngredients.value,
+			price: inputPrice.value
+		}
+
+		axios.post('http://localhost:3333/dish', dish, axiosConfig).then(response => {
+			if(response.status == 200) {
+				location.reload();
+			}
+		}).catch(err => {
+			console.log(err);
+		});
+	};
+
+	function deleteDish(listItem) {
+		let id = listItem.getAttribute("data-id");
+		axios.delete('http://localhost:3333/dish/'+id, axiosConfig).then(response => {
+			location.reload();
+		}).catch(err => {
+			console.log(err);
+		});
+	};
+
+	function loadForm(listItem) {
+		let id = listItem.getAttribute('data-id');
+		let name = listItem.getAttribute('data-name');
+		let ingredients = listItem.getAttribute('data-ingredients');
+		let price = listItem.getAttribute('data-price');
+
+		document.getElementById('editedId').value = id;
+		document.getElementById('editedName').value = name;
+		document.getElementById('editedIngredients').value = ingredients;
+		document.getElementById('editedPrice').value = price;
+	}
+
+	function editDish() {
+		let inputId = document.getElementById('editedId');
+		let inputName = document.getElementById('editedName');
+		let inputIngredients = document.getElementById('editedIngredients');
+		let inputPrice = document.getElementById('editedPrice');
+
+		let dish = {
+			name: inputName.value,
+			ingredients: inputIngredients.value,
+			price: inputPrice.value
+		}
+
+		let id = inputId.value;
+
+		axios.put('http://localhost:3333/dish/'+id, dish, axiosConfig).then(response => {
+			if(response.status == 200) {
+				location.reload();
+			}
+		}).catch(err => {
+			console.log(err);
+		});
+	}
+
+	axios.get('http://localhost:3333/dishes', axiosConfig).then(response => {
+		let dishes = response.data;
+		let list = document.getElementById('dishes');
+
+		dishes.forEach(dish => {
+			let item = document.createElement('li');
+
+			item.setAttribute("data-id", dish.id);
+			item.setAttribute("data-name", dish.name);
+			item.setAttribute("data-ingredients", dish.ingredients);
+			item.setAttribute("data-price", dish.price);
+			
+			item.innerHTML = dish.id + ' - ' + dish.name +  ' - $' + dish.price + ' - ' + dish.ingredients;		
+			
+			let deleteBtn = document.createElement('button');
+
+			deleteBtn.innerHTML = 'Delete';
+			deleteBtn.addEventListener("click", function() {
+				deleteDish(item);
+			});
+
+			let editBtn = document.createElement('button');
+
+			editBtn.innerHTML = 'Edit';
+			editBtn.addEventListener("click", function() {
+				loadForm(item);
+			});
+			item.appendChild(deleteBtn);
+			item.appendChild(editBtn);
+			list.appendChild(item);
+		});
+	}).catch(err => {
+		console.log(err);
+	})
+</script>
+</html>
