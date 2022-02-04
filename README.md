@@ -1,5 +1,6 @@
 # DISH_API
 
+
 A RESTful API for restaurant dishes with login system using JWT 
 
 ### How to use
@@ -18,6 +19,8 @@ A RESTful API for restaurant dishes with login system using JWT
 
 ### Endpoints
 
+---
+
 #### POST /user
 
 This endpoint will create a user in your DB
@@ -34,6 +37,8 @@ Your account was created successful
 * Bad Request 400
 
 You will get this error if you try to create an account and the email used is already registered
+
+---
 
 #### POST /auth
 
@@ -67,6 +72,8 @@ You will receive this error if you don't send a email in login form
 * Unathorized 401
 
 You will receive this error if you try to log in with a invalid account
+
+---
 
 #### GET /dishes
 
@@ -136,6 +143,8 @@ example(my favorites dishes in pt-br hehe):
 ]
 ```
 
+---
+
 #### GET /dish/:id
 
 This endpoint will response a specific dish registered in DB
@@ -186,6 +195,8 @@ You will receive this error if you send a NaN id as parameter
 
 You'll receive this error if you send a non-registered id as parameter
 
+---
+
 #### POST /dish/:id
 
 This endpoint will register a dish in your DB
@@ -213,6 +224,8 @@ You will receive this response in 3 situations:
     * you send "ingredients" as undefined
     * you send a Nan "price"
 
+---
+
 #### Delete /dish/:id
 
 This endpoint will delete a registered dish using your id to delete it
@@ -233,6 +246,7 @@ You will receive this error if you send a NaN id as parameter
 * Not found 404
 You will receive this error if you send a non-registered id as parameter
 
+---
 
 #### PUT /dish/:id
 
